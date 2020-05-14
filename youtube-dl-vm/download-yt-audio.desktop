@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
-Name=Download Youtube Musics
-Exec=sh -c "echo -x --default-search=ytsearch | /etc/qubes-rpc/qubes.YoutubeDl"
+Name=Download Youtube Songs
+Exec=qubes-youtube-dl -x --default-search=ytsearch
 Terminal=false
 Type=Application
-Categories=Network;Audio;Music;
+Categories=Utility;Audio
 X-Desktop-File-Install-Version=0.23
