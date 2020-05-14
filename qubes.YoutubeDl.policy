@@ -1,2 +1,0 @@
-$anyvm @default ask,target=dispvm:your-default-youtube-dl-disp-template
-$anyvm $anyvm ask

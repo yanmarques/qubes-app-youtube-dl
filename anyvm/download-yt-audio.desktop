@@ -1,8 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Name=Download Youtube Musics
-Exec=qrexec-client-vm @default YoutubeDl /bin/echo -x --default-search=ytsearch
-Terminal=false
-Type=Application
-Categories=Network;Videos;
-X-Desktop-File-Install-Version=0.23
