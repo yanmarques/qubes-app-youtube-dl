@@ -39,20 +39,20 @@ def main(youtube_dl_args):
     if '--help' in youtube_dl_args:
         this_bin = os.path.basename(sys.argv[0])
         print('Usage: {0} [--help] [YOUTUBE_DL_ARGS]'.format(this_bin))
-        return 0
+        return 128
 
     # keep prompting urls until receive empty
     should_continue, urls = True, []
     while should_continue:
+        url = ask_url()
         if url:
             urls.append(url)
-        url = ask_url()
         else:
             should_continue = False
 
     # we do not want emptyness
     if not urls:
-        return 0
+        return 2
 
     confirmation_question = """--question --width=350 
                             --text="The following URLs will be downloaded. Continue?\n"""
