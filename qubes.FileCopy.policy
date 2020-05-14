@@ -1,0 +1,3 @@
+# Just make copy operations easier. Take note that it sould be appended
+# to the original qubes.FileCopy policy.
+$dispvm:your-youtube-dl-vm @default ask,default_target=your-media-vm
