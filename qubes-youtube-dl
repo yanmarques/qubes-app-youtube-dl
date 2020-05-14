@@ -32,14 +32,16 @@ def ask_url():
     return call_zenity(args)
 
 
-def main():
-    # receive custom youtube-dl arguments
-    youtube_dl_args = input().strip().split()
-    
+def main(youtube_dl_args):
+    # print help message
+    if '--help' in youtube_dl_args:
+        this_bin = os.path.basename(sys.argv[0])
+        print('Usage: {0} [--help] [YOUTUBE_DL_ARGS]'.format(this_bin))
+        return 0
+
     # keep prompting urls until receive empty
     should_continue, urls = True, []
     while should_continue:
-        url = ask_url()
         if url:
             urls.append(url)
         else:
@@ -49,7 +51,6 @@ def main():
     if not urls:
         return 0
 
-    confirmation_question = '--question --width=350 --text="Are you sure you want to continue?\n'
     confirmation_question += '\n'.join(urls)
     
     # close opened double quotes
@@ -85,4 +86,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
