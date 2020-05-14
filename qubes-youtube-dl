@@ -11,13 +11,14 @@ import traceback
 from distutils import spawn
 
 
-def call_zenity(str_args):
+def call_zenity(str_args, **kwargs):
     command = ['/usr/bin/zenity'] + shlex.split(str_args)
 
     try:
         return subprocess.check_output(
                     command, 
-                    stderr=subprocess.DEVNULL).decode('utf-8').strip()
+                    stderr=subprocess.DEVNULL,
+                    **kwargs).decode('utf-8').strip()
     except subprocess.CalledProcessError as exc:
         # ensure we handle user Cancelled action
         if exc.returncode == 1:
@@ -77,17 +78,15 @@ def main(youtube_dl_args):
         return 127
 
     # build default youtube-dl params
-    command = [youtube_dl_bin] + youtube_dl_args
+    command = [youtube_dl_bin] + youtube_dl_args + urls
     
-    for url in urls:
-        # try to download; handle a possible exception; keep moving
-        try:
-            subprocess.run(command + [url])
-        except:
-            traceback.print_exc()
-
+    yt_proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+    call_zenity('--progress --auto-close --pulsate --title="Download" --text="Downloading..."', 
+                stdin=yt_proc.stdout)
+    yt_proc.communicate()
+    
     # move directory with downloaded videos to some vm 
-    subprocess.run(['/usr/bin/qvm-move', tmpdir.name], check=True)
+    subprocess.run(['/usr/bin/qvm-copy', tmpdir.name], check=True)
 
     return 0
 
