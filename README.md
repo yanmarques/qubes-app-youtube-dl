@@ -17,8 +17,6 @@ You are protected against allowing malicious video/audio files accessing network
 So, this script is just an automation to make our life easier, but off course that is something you could (kind of) do easily by yourself.
 
 # Getting Started
-**Note**: When then command starts with `#` it should run as root otherwise by regular user
-
 ## Download
 - clone the repo in some domU with network access:
 ```bash
@@ -55,18 +53,18 @@ One may want to simplify copying downloaded content to the same media vm. If thi
 $ cd qubes-app-youtube-dl-master && qvm-copy qubes.YoutubeDl youtube-dl-vm
 ```
 
-- from your `base templatevm`, inside `QubesIncoming` copied directory, do:
+- from your `base templatevm`, inside `QubesIncoming` copied directory, do as **root**:
     - copy `qubes-youtube-dl` to `/usr/bin/`, make sure it is executable by everyone and owned by root:
     ```bash
-    # chmod 755 qubes-youtube-dl
-    # chown root:root qubes-youtube-dl
-    # cp qubes-youtube-dl /usr/bin/
+    $ chmod 755 qubes-youtube-dl
+    $ chown root:root qubes-youtube-dl
+    $ cp qubes-youtube-dl /usr/bin/
     ```
     - copy desktop entries inside `youtube-dl-vm` to `/usr/share/applications`:
     ```bash
-    # chmod 644 youtube-dl-vm/*.desktop
-    # chown root:root youtube-dl-vm/*.desktop
-    # cp youtube-dl-vm/*.desktop /usr/share/applications/
+    $ chmod 644 youtube-dl-vm/*.desktop
+    $ chown root:root youtube-dl-vm/*.desktop
+    $ cp youtube-dl-vm/*.desktop /usr/share/applications/
     ```
 
 - in your `base templatevm` settings, refresh your applications, and you should see it discovered something like `Download Youtube Songs/Videos`
