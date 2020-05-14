@@ -15,7 +15,9 @@ def call_zenity(str_args):
     command = ['/usr/bin/zenity'] + shlex.split(str_args)
 
     try:
-        return subprocess.check_output(command, stderr=subprocess.DEVNULL).decode('utf-8')
+        return subprocess.check_output(
+                    command, 
+                    stderr=subprocess.DEVNULL).decode('utf-8').strip()
     except subprocess.CalledProcessError as exc:
         # ensure we handle user Cancelled action
         if exc.returncode == 1:
@@ -44,6 +46,7 @@ def main(youtube_dl_args):
     while should_continue:
         if url:
             urls.append(url)
+        url = ask_url()
         else:
             should_continue = False
 
