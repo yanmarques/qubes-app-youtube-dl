@@ -9,7 +9,9 @@ Here it needs two vms:
 - media-vm: acts like a vault vm, but for media. No network access yada yada. After the `youtube-dl-vm` do it's operations, will move downloaded data to some vm, which in fact should be this one.
 
 **You are not protected against malicious downloaded video/audio files.**
+
 **You are not protected against hipotetically bug in youtube-dl which further compromises the download operation which could make an attacker maliciously tamper video/audio files.**
+
 You are protected against allowing malicious video/audio files accessing network directly.
 
 So, this script is just an automation to make our life easier, but off course that is something you could (kind of) do easily by yourself.
