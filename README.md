@@ -1,13 +1,12 @@
 # qubes-app-youtube-dl
-Wrapper to awesome [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html) to help running it inside a vm without touching the terminal.
+Wrap awesome [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html) to help running it inside a vm without touching the terminal.
 
 # Why?
-Inspired by QubesOS split gpg, @marmarek split yubikey, @henn split ssh.
-The main design follows the same principles but in a different manner, because of different purposes. 
+The main design is to split the vm which handle downloads and the one which actually reproduce the media content. 
 
 Here it needs two vms:
-    - youtube-dl-vm (disposable or not): contains the youtube-dl binary which actually download everything and has full or limited network access.
-    - media-vm: acts like a vault vm, but for media. No network access yada yada. After the `youtube-dl-vm` do it's operations, will move downloaded data to some vm, which in fact should be this one.
+- youtube-dl-vm (disposable or not): contains the youtube-dl binary which actually download everything and has full or limited network access.
+- media-vm: acts like a vault vm, but for media. No network access yada yada. After the `youtube-dl-vm` do it's operations, will move downloaded data to some vm, which in fact should be this one.
 
 **You are not protected against malicious downloaded video/audio files.**
 **You are not protected against hipotetically bug in youtube-dl which further compromises the download operation which could make an attacker maliciously tamper video/audio files.**
@@ -16,7 +15,7 @@ You are protected against allowing malicious video/audio files accessing network
 So, this script is just an automation to make our life easier, but off course that is something you could (kind of) do easily by yourself.
 
 # Getting Started
-**When then command starts with _#_ it should run as root otherwise by regular user**
+**Note**: When then command starts with `#` it should run as root otherwise by regular user
 
 ## Download
 - clone the repo in some domU with network access:
@@ -49,7 +48,7 @@ One may want to simplify copying downloaded content to the same media vm. If thi
     - youtube-dl (either by a package manager, pip, or the binary downloaded from their [website](https://ytdl-org.github.io/youtube-dl/download.html) since it is easily found from `PATH` env)
     - zenity (generally already installed by the OSes)
 
-- from your ~~domU~~, copy `qubes.YoutubeDl` and `youtube-dl-vm` to the `base templatevm`:
+- from your `domU`, copy `qubes.YoutubeDl` and `youtube-dl-vm` to the `base templatevm`:
 ```bash
 $ cd qubes-app-youtube-dl-master && qvm-copy qubes.YoutubeDl youtube-dl-vm
 ```
