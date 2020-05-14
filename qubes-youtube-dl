@@ -80,12 +80,12 @@ def main(youtube_dl_args):
     for url in urls:
         # try to download; handle a possible exception; keep moving
         try:
-            subprocess.call(command + [url])
+            subprocess.run(command + [url])
         except:
             traceback.print_exc()
 
     # move directory with downloaded videos to some vm 
-    subprocess.call(['/usr/bin/qvm-move', tmpdir.name])
+    subprocess.run(['/usr/bin/qvm-move', tmpdir.name], check=True)
 
     return 0
 
