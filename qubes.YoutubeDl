@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+
+import os
+import sys
+import shlex
+import tempfile
+import subprocess
+import traceback
+
+from distutils import spawn
+
+
+def call_zenity(str_args):
+    command = ['/usr/bin/zenity'] + shlex.split(str_args)
+
+    try:
+        return subprocess.check_output(command, stderr=subprocess.DEVNULL).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # ensure we handle user Cancelled action
+        if exc.returncode == 1:
+            return False
+        
+        # otherwise put exception back on stack
+        raise
+
+
+def ask_url():
+    args = """--entry
+            --text='Please specify the URL or item to search. Press enter when you are done.'
+            --title='Youtube Download'"""
+    return call_zenity(args)
+
+
+def main():
+    # receive custom youtube-dl arguments
+    youtube_dl_args = input().strip().split()
+    
+    # keep prompting urls until receive empty
+    should_continue, urls = True, []
+    while should_continue:
+        url = ask_url()
+        if url:
+            urls.append(url)
+        else:
+            should_continue = False
+
+    # we do not want emptyness
+    if not urls:
+        return 0
+
+    confirmation_question = '--question --width=350 --text="Are you sure you want to continue?\n'
+    confirmation_question += '\n'.join(urls)
+    
+    # close opened double quotes
+    confirmation_question += '"'
+
+    # confirm with user wheter to proceed
+    if call_zenity(confirmation_question) is False:
+        return 1
+    
+    # create directory to download files
+    tmpdir = tempfile.TemporaryDirectory()
+    
+    os.chdir(tmpdir.name)
+
+    # binary from package manager, pip, whatever
+    youtube_dl_bin = spawn.find_executable('youtube-dl')
+    assert youtube_dl_bin, 'Missing requirement: youtube-dl'
+
+    # build default youtube-dl params
+    command = [youtube_dl_bin] + youtube_dl_args
+    
+    for url in urls:
+        # try to download; handle a possible exception; keep moving
+        try:
+            subprocess.call(command + [url])
+        except:
+            traceback.print_exc()
+
+    # move directory with downloaded videos to some vm 
+    subprocess.call(['/usr/bin/qvm-move', tmpdir.name])
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
