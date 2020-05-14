@@ -17,7 +17,7 @@ You are protected against allowing malicious video/audio files accessing network
 So, this script is just an automation to make our life easier, but off course that is something you could (kind of) do easily by yourself.
 
 # Getting Started
-## Download
+## Download and Verify
 - clone the repo in some domU with network access:
 ```bash
 $ git clone git@github.com:yanmarques/qubes-usb3to2-service-dom0.git
