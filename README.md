@@ -42,6 +42,7 @@ one should see a `Good signature`, otherwhise go back and repeat above steps or 
 One may want to simplify copying downloaded content to the same media vm. If this is true, change the content of `qubes.Filecopy.policy` where:
 - `your-youtube-dl-vm`: the base youtube-dl appvm, by default this vm must be template for disposable vms, but you may remove the `$disp:` part to avoid this behavior.
 - `your-media-vm`: the media vm to move content for.
+
 Now append the contents of `qubes.Filecopy.policy` to dom0 at `/etc/qubes-rpc/policy/qubes.Filecopy`.
 
 ### YoutubeDl VM
