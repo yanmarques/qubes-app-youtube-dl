@@ -54,6 +54,8 @@ def main(youtube_dl_args):
     if not urls:
         return 0
 
+    confirmation_question = """--question --width=350 
+                            --text="The following URLs will be downloaded. Continue?\n"""
     confirmation_question += '\n'.join(urls)
     
     # close opened double quotes
