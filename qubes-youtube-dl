@@ -70,7 +70,9 @@ def main(youtube_dl_args):
 
     # binary from package manager, pip, whatever
     youtube_dl_bin = spawn.find_executable('youtube-dl')
-    assert youtube_dl_bin, 'Missing requirement: youtube-dl'
+    if youtube_dl_bin is None:
+        call_zenity('--error --text="Missing requirement: youtube-dl"')
+        return 127
 
     # build default youtube-dl params
     command = [youtube_dl_bin] + youtube_dl_args
