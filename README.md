@@ -1,5 +1,10 @@
 # qubes-app-youtube-dl
-Wrap awesome [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html) to help running it inside a vm without touching the terminal.
+Wraps awesome [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui), a front-end GUI for [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html) written in wxPython. 
+
+By now, [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) is not a strict requirement, altough it is highly recommended for more interaction, more options and asynchronous download system.
+In the case it is not installed, a old-zenity-handwritten GUI is presented as a fallback.
+
+For more informations about [youtube-dl-gui-wrapper](#Youtube-Dl-GUI Wrapper).
 
 # Why?
 The main design is to split the vm which handle downloads and the one which actually reproduce the media content. 
@@ -15,6 +20,11 @@ Here it needs two vms:
 You are protected against allowing malicious video/audio files accessing network directly.
 
 So, this script is just an automation to make our life easier, but off course that is something you could (kind of) do easily by yourself.
+
+# Youtube-Dl-GUI Wrapper
+The [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) appplication does a nice job creating a front-end interface for [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html). As already stated, it is recommended instead of default interface based on zenity. 
+
+So how it works? The youtube-dl-gui app is started, the user add urls, downloads it and when the app is closed we (kind of) gently ask the app all the video/audio files the user had downloaded with success. Now it is easy, we just copy it to another vm.
 
 # Getting Started
 ## Download and Verify
@@ -50,24 +60,16 @@ Now append the contents of `qubes.Filecopy.policy` to dom0 at `/etc/qubes-rpc/po
     - youtube-dl (either by a package manager, pip, or the binary downloaded from their [website](https://ytdl-org.github.io/youtube-dl/download.html) since it is easily found from `PATH` env)
     - zenity (generally already installed by the OSes)
 
-- from your `domU`, copy `qubes.YoutubeDl` and `youtube-dl-vm` to the `base templatevm`:
+#### From source
+- from your `domU`, copy the project to the `base templatevm`:
 ```bash
-$ cd qubes-app-youtube-dl-master && qvm-copy qubes.YoutubeDl youtube-dl-vm
+$ qvm-copy qubes-app-youtube-dl-master/
 ```
 
 - from your `base templatevm`, inside `QubesIncoming` copied directory, do as **root**:
-    - copy `qubes-youtube-dl` to `/usr/bin/`, make sure it is executable by everyone and owned by root:
-    ```bash
-    $ chmod 755 qubes-youtube-dl
-    $ chown root:root qubes-youtube-dl
-    $ cp qubes-youtube-dl /usr/bin/
-    ```
-    - copy desktop entries inside `youtube-dl-vm` to `/usr/share/applications`:
-    ```bash
-    $ chmod 644 youtube-dl-vm/*.desktop
-    $ chown root:root youtube-dl-vm/*.desktop
-    $ cp youtube-dl-vm/*.desktop /usr/share/applications/
-    ```
+```bash
+$ python setup.py install
+```
 
 - in your `base templatevm` settings, refresh your applications, and you should see it discovered something like `Download Youtube Songs/Videos`
 - now shutdown your `base templatevm` and create your youtube-dl-vm with this templatevm as template
