@@ -1,9 +1,41 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# BSD 3-Clause License
 
+# Copyright (c) 2020, Yan Marques
+# All rights reserved.
+
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+from __future__ import print_function
 
 import os
 import sys
 import shlex
+import shutil
 import tempfile
 import subprocess
 import traceback
@@ -11,14 +43,46 @@ import traceback
 from distutils import spawn
 
 
+# for compatibility code
+PY2 = sys.version_info[0] < 3
+
+
+def try_youtube_dl_gui():
+    try:
+        import youtube_dl_gui   # pylint: disable=unused-variable
+        return True
+    except ImportError:
+        return False
+
+
+def proc_call(command, check_output=False, **kwargs):
+    # helper for capturing the output
+    kwargs.setdefault('stdout', subprocess.PIPE if check_output else None)
+    
+    # create the process with given arguments
+    process = subprocess.Popen(command, **kwargs)
+
+    # wait for it to finish and return a tuple(stdout, stderr) as bytes
+    return process.communicate()
+
+
+def mkdtemp():
+    if PY2:
+        return tempfile.mkdtemp()
+    
+    # keep mkdtemp() behaviour of returning an absolute path
+    return tempfile.TemporaryDirectory().name
+
+
 def call_zenity(str_args, **kwargs):
     command = ['/usr/bin/zenity'] + shlex.split(str_args)
 
     try:
-        return subprocess.check_output(
-                    command, 
-                    stderr=subprocess.DEVNULL,
-                    **kwargs).decode('utf-8').strip()
+        # capture process stdout
+        stdout = proc_call(command, check_output=True, **kwargs)[0]
+        
+        # return output stripped
+        return stdout.decode('utf-8').strip()
     except subprocess.CalledProcessError as exc:
         # ensure we handle user Cancelled action
         if exc.returncode == 1:
@@ -35,12 +99,18 @@ def ask_url():
     return call_zenity(args)
 
 
-def main(youtube_dl_args):
+def run_old_youtube_dl_wrapper(youtube_dl_args):
     # print help message
     if '--help' in youtube_dl_args:
         this_bin = os.path.basename(sys.argv[0])
         print('Usage: {0} [--help] [YOUTUBE_DL_ARGS]'.format(this_bin))
         return 128
+
+    # warn the user that he/she should install youtube-dlg for full interaction
+    call_zenity("""--info --width=500
+                --text="Hey you. Seems like you do not have youtube-dlg installed.\n
+I really recommend you to install it. Besides I will not let you with free hands, and an
+old less-interactive interface to download videos/songs will pop up.\nYou were advised." """)
 
     # keep prompting urls until receive empty
     should_continue, urls = True, []
@@ -67,9 +137,9 @@ def main(youtube_dl_args):
         return 1
     
     # create directory to download files
-    tmpdir = tempfile.TemporaryDirectory()
+    tmpdir_name = mkdtemp()
     
-    os.chdir(tmpdir.name)
+    os.chdir(tmpdir_name)
 
     # binary from package manager, pip, whatever
     youtube_dl_bin = spawn.find_executable('youtube-dl')
@@ -80,13 +150,95 @@ def main(youtube_dl_args):
     # build default youtube-dl params
     command = [youtube_dl_bin] + youtube_dl_args + urls
     
+    # do not use proc_call() here because it needs stdout fd
     yt_proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+
+    # this is the equivalent of doing in the shell: $ youtube-dl ... | zenity ...
     call_zenity('--progress --auto-close --pulsate --title="Download" --text="Downloading..."', 
                 stdin=yt_proc.stdout)
-    yt_proc.communicate()
     
+    # wait parent process to finish
+    yt_proc.communicate()
+
+    # get all paths inside temp directory
+    return os.listdir(tmpdir_name)
+
+
+def run_youtube_dl_wrapper(youtube_dl_args):
+    # just warn user about arguments being ignored
+    if youtube_dl_args:
+        print('Args passed are being ignored: {}'.format(youtube_dl_args))
+
+    # keep a copy of actual DownloadList
+    # in the end this will contain all downloades files
+    download_list = youtube_dl_gui.downloadmanager.DownloadList() # pylint: disable=undefined-variable
+
+    # black magic, we mock the DownloadList with function that always return 
+    # our DownloadList object
+    # 
+    # important to note here that we are changing the imported class dynamically,
+    # not the actual DownloadList, which is at youtube_dl_gui.downloadmanager module.
+    #
+    # this is because when youtube_dl_gui is imported, so does .mainframe which in turn
+    # imports DownloadList from .downloadmanager, so changing the class from downloadmanager
+    # module has no effect.
+    sys.modules['youtube_dl_gui.mainframe'].DownloadList = lambda: download_list
+
+    # actually start the app
+    youtube_dl_gui.main()   # pylint: disable=undefined-variable
+
+    # run has finished and we copy selected items
+    filenames = []
+
+    # stage "Completed"
+    correct_stage = youtube_dl_gui.downloadmanager.DownloadItem.STAGES[3] # pylint: disable=undefined-variable
+    
+    for item in download_list.get_items():
+        if item.stage == correct_stage:
+            # for each path associated with the item add it to list when found
+            for path in item.get_files():
+                if os.path.exists(path):
+                    filenames.append(path)
+    
+    return filenames
+
+
+def deduce_handler_fn(has_yt_dl_gui):
+    if has_yt_dl_gui:
+        return run_youtube_dl_wrapper
+
+    return run_old_youtube_dl_wrapper
+
+
+def main(youtube_dl_args):
+    # try to import youtube-dlg, return result as boolean
+    has_yt_dl_gui = try_youtube_dl_gui()
+    
+    # handler function to get files to copy
+    handler_fn = deduce_handler_fn(has_yt_dl_gui)
+
+    # execute handler and get a result
+    result = handler_fn(youtube_dl_args)
+        
+    # check wheter is a return code
+    if isinstance(result, int):
+        return result
+    
+    # ensure result is list of something, hope they are strings
+    assert isinstance(result, list)
+
+    # skip emptyness
+    if not result:
+        return 2
+
     # move directory with downloaded videos to some vm 
-    subprocess.run(['/usr/bin/qvm-copy', tmpdir.name], check=True)
+    proc_call(['/usr/bin/qvm-copy'] + result)
+
+    # check wheter we should remove temporary directory
+    # on python version 2 we have to deal with it manually
+    if PY2 and not has_yt_dl_gui:
+        # get the directory of first file which in fact is the temp directory
+        shutil.rmtree(os.path.dirname(result[0]))
 
     return 0
 
