@@ -2,9 +2,9 @@
 Wraps awesome [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui), a front-end GUI for [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html) written in wxPython. 
 
 By now, [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) is not a strict requirement, altough it is highly recommended for more interaction, more options and asynchronous download system.
-In the case it is not installed, a old-zenity-handwritten GUI is presented as a fallback.
+In the case it is not installed, an old-zenity-handwritten GUI is presented as a fallback.
 
-For more informations about [youtube-dl-gui-wrapper](#Youtube-Dl-GUI Wrapper).
+For more informations about [youtube-dl-gui-wrapper](#youtube-dl-gui-wrapper).
 
 # Why?
 The main design is to split the vm which handle downloads and the one which actually reproduce the media content. 
