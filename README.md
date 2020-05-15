@@ -27,6 +27,12 @@ The [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) appplication d
 So how it works? The youtube-dl-gui app is started, the user add urls, downloads it and when the app is closed we (kind of) gently ask the app all the video/audio files the user had downloaded with success. Now it is easy, we just copy it to another vm.
 
 # Getting Started
+## Requirements:
+- [python-2.7+](https://www.python.org/downloads/)
+- one of the following should be installed as front-end GUI:
+    - [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) (recommended)
+    - [zenity](https://help.gnome.org/users/zenity/3.32/intro.html.en) (generally already installed by your OS)
+
 ## Download and Verify
 - clone the repo in some domU with network access:
 ```bash
