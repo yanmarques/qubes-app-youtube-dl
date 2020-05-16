@@ -29,29 +29,48 @@ So how it works? The youtube-dl-gui app is started, the user add urls, downloads
 # Getting Started
 ## Requirements:
 - [python-2.7+](https://www.python.org/downloads/)
+- [youtube-dl](https://ytdl-org.github.io/youtube-dl/index.html)
 - one of the following should be installed as front-end GUI:
     - [youtube-dl-gui](https://github.com/MrS0m30n3/youtube-dl-gui) (recommended)
     - [zenity](https://help.gnome.org/users/zenity/3.32/intro.html.en) (generally already installed by your OS)
 
 ## Download and Verify
-- clone the repo in some domU with network access:
-```bash
-$ git clone git@github.com:yanmarques/qubes-usb3to2-service-dom0.git
-```
+There are two methods to download and verify. The first assumes you are a github user with an active account. The later uses a source distribution archive, which does not require a github account. The both ways should result in the same thing.
 
-- check gpg signature, first one must get the public key:
+Wait...before proceed make sure you get author's public key:
 ```bash
-$ gpg2 --keyserver keys.gnupg.net --recv-keys 0xB677080945DF2D38C7C5F15F80AB0F5FDECFB4A9
+$ gpg --keyserver keys.gnupg.net --recv-keys 0xB677080945DF2D38C7C5F15F80AB0F5FDECFB4A9
 ```
 as Qubes itself always confirm, [distrust the infrastructure](https://www.qubes-os.org/faq/#what-does-it-mean-to-distrust-the-infrastructure), you may also check the public key from another keyserver, from github [gpg keys api](https://developer.github.com/v3/users/gpg_keys/#list-gpg-keys-for-a-user), etc...
+
+### Cloning
+- clone the repo in some domU with network access:
+```bash
+$ git clone git@github.com:yanmarques/qubes-app-youtube-dl.git
+```
 
 - verify repo tag, inside cloned directory:
 ```bash
 $ git tag -v v0.1
 ```
 
-one should see a `Good signature`, otherwhise go back and repeat above steps or search for help.
+### Source archive
+- download the source archive using your favorite download manager:
+```bash
+$ wget https://github.com/yanmarques/qubes-app-youtube-dl/archive/qubes-app-youtube-dl-0.2.tar.gz
+```
 
+- download the source archive signature for further checking the archive integrity and confidentiality:
+```bash
+$ wget https://github.com/yanmarques/qubes-app-youtube-dl/archive/qubes-app-youtube-dl-0.2.tar.gz.sig
+```
+
+- verify it now:
+```bash
+$ git --verify qubes-app-youtube-dl-0.2.tar.gz.sig qubes-app-youtube-dl-0.2.tar.gz
+```
+
+From the both methods, after verifying, one should see a `Good signature`, otherwhise go back and repeat above steps or search for help.
 
 ## Install
 ### Dom0 (Optional)
@@ -62,12 +81,11 @@ One may want to simplify copying downloaded content to the same media vm. If thi
 Now append the contents of `qubes.Filecopy.policy` to dom0 at `/etc/qubes-rpc/policy/qubes.Filecopy`.
 
 ### YoutubeDl VM
-- choose a templatevm to use as base for your youtube-dl appvm, and make sure to install above packages:
-    - youtube-dl (either by a package manager, pip, or the binary downloaded from their [website](https://ytdl-org.github.io/youtube-dl/download.html) since it is easily found from `PATH` env)
-    - zenity (generally already installed by the OSes)
+The easiest way to install it by now is from source.
 
-#### From source
-- from your `domU`, copy the project to the `base templatevm`:
+One may choose a templatevm to use as base for your youtube-dl appvm, and that one will be called as `base templatevm` by now.
+
+- from your `domU`, copy the downloaded and verified project to the `base templatevm`:
 ```bash
 $ qvm-copy qubes-app-youtube-dl-master/
 ```
