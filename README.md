@@ -67,7 +67,7 @@ $ wget https://github.com/yanmarques/qubes-app-youtube-dl/releases/download/v0.2
 
 - verify it now:
 ```bash
-$ git --verify qubes-app-youtube-dl-0.2.tar.gz.sig qubes-app-youtube-dl-0.2.tar.gz
+$ gpg --verify qubes-app-youtube-dl-0.2.tar.gz.sig qubes-app-youtube-dl-0.2.tar.gz
 ```
 
 From the both methods, after verifying, one should see a `Good signature`, otherwhise go back and repeat above steps or search for help.
