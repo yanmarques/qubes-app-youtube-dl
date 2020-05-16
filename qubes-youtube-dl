@@ -240,8 +240,9 @@ def main(youtube_dl_args):
     # check wheter we should remove temporary directory
     # on python version 2 we have to deal with it manually
     if PY2 and not has_yt_dl_gui:
-        # get the directory of first file which in fact is the temp directory
-        shutil.rmtree(os.path.dirname(result[0]))
+        # assumes we "cd" into the temporary directory, so we remove
+        # the current working directory
+        shutil.rmtree(os.getcwd())
 
     return 0
 
