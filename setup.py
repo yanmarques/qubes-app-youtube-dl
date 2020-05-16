@@ -5,7 +5,7 @@ from distutils.core import setup
 import sys
 
 setup(name='qubes-app-youtube-dl',
-      version='0.2',
+      version='0.2.1',
       license='BSD (3 clause)',
       description='A wrapper for youtube-dl-gui in a Qubes disposable vm',
       author='Yan Marques de Cerqueira',
