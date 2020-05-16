@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=Download Youtube Songs
-Exec=qubes-youtube-dl -x --default-search=ytsearch
+Exec=qvm-youtube-dl -x --default-search=ytsearch
 Terminal=false
 Type=Application
 Categories=Utility;Audio

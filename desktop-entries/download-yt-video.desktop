@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=Download Youtube Videos
-Exec=qubes-youtube-dl --default-search=ytsearch
+Exec=qvm-youtube-dl --default-search=ytsearch
 Terminal=false
 Type=Application
 Categories=Utility;Video
