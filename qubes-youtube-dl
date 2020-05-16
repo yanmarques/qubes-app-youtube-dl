@@ -169,6 +169,9 @@ def run_youtube_dl_wrapper(youtube_dl_args):
     if youtube_dl_args:
         print('Args passed are being ignored: {}'.format(youtube_dl_args))
 
+    # make sure we access youtube_dl_gui
+    import youtube_dl_gui
+
     # keep a copy of actual DownloadList
     # in the end this will contain all downloades files
     download_list = youtube_dl_gui.downloadmanager.DownloadList() # pylint: disable=undefined-variable
