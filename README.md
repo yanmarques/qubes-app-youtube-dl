@@ -57,12 +57,12 @@ $ git tag -v v0.1
 ### Source archive
 - download the source archive using your favorite download manager:
 ```bash
-$ wget https://github.com/yanmarques/qubes-app-youtube-dl/archive/qubes-app-youtube-dl-0.2.tar.gz
+$ wget https://github.com/yanmarques/qubes-app-youtube-dl/releases/download/v0.2/qubes-app-youtube-dl-0.2.tar.gz
 ```
 
 - download the source archive signature for further checking the archive integrity and confidentiality:
 ```bash
-$ wget https://github.com/yanmarques/qubes-app-youtube-dl/archive/qubes-app-youtube-dl-0.2.tar.gz.sig
+$ wget https://github.com/yanmarques/qubes-app-youtube-dl/releases/download/v0.2/qubes-app-youtube-dl-0.2.tar.gz.sig
 ```
 
 - verify it now:
@@ -87,7 +87,7 @@ One may choose a templatevm to use as base for your youtube-dl appvm, and that o
 
 - from your `domU`, copy the downloaded and verified project to the `base templatevm`:
 ```bash
-$ qvm-copy qubes-app-youtube-dl-master/
+$ qvm-copy DOWNLOAD-AND-VERIFIFIED-PROJECT-DIRECTORY
 ```
 
 - from your `base templatevm`, inside `QubesIncoming` copied directory, do as **root**:
